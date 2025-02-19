@@ -8,37 +8,68 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var cities = ["Vancouver", "Calgary", "Edmonton", "Regina", "Winnipeg",
-        "Toronto", "Montreal", "Quebec City", "Halifax"]
+    @State private var cities: [String] = UserDefaults.standard.stringArray(forKey: "SavedCities") ?? ["New York", "London", "Tokyo"]
     @State private var weatherData: [CityWeather] = []
     @State private var isLoading = true
+    @State private var newCity: String = ""
 
     var body: some View {
         NavigationStack {
-            if isLoading {
-                ProgressView("Fetching Weather...")
-            } else {
-                List(weatherData) { city in
-                    NavigationLink(destination: DetailView(cityName: city.name)) {
-                        HStack {
-                            Text(city.name)
-                                .font(.headline)
-                            Spacer()
-                            Text(city.temperatureString)
-                                .foregroundColor(.blue)
-                        }
-                        .padding(5)
+            VStack {
+                // Add City TextField & Button
+                HStack {
+                    TextField("Enter city name", text: $newCity)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .autocapitalization(.words)
+
+                    Button(action: addCity) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.blue)
+                            .font(.title)
                     }
                 }
-                .navigationTitle("Weather App")
+                .padding()
+
+                // Weather List
+                if isLoading {
+                    ProgressView("Fetching Weather...")
+                } else {
+                    List {
+                        ForEach(weatherData) { city in
+                            NavigationLink(destination: DetailView(cityName: city.name)) {
+                                HStack {
+                                    Image(systemName: city.weatherIcon)
+                                        .foregroundColor(.blue)
+                                        .imageScale(.large)
+                                    Text(city.name)
+                                        .font(.headline)
+                                    Spacer()
+                                    Text(city.temperatureString)
+                                        .foregroundColor(.blue)
+                                }
+                                .padding(5)
+                            }
+                        }
+                        .onDelete(perform: removeCity) // Swipe to delete
+                    }
+                    .navigationTitle("Weather App")
+                }
             }
         }
         .task {
             await loadWeather()
         }
+        .onAppear {
+            Task {
+                await loadWeather()
+            }
+        }
     }
 
+    // 🔹 Fetch weather data
     private func loadWeather() async {
+        guard !cities.isEmpty else { return } // Avoid unnecessary API calls
+
         do {
             weatherData = try await withThrowingTaskGroup(of: CityWeather?.self) { group in
                 for city in cities {
@@ -60,7 +91,32 @@ struct ContentView: View {
             print("Error fetching weather: \(error)")
         }
     }
+
+    // 🔹 Add a city
+    private func addCity() {
+        let city = newCity.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !city.isEmpty, !cities.contains(city) else { return }
+
+        cities.append(city)
+        UserDefaults.standard.set(cities, forKey: "SavedCities") // Save to UserDefaults
+        newCity = ""
+
+        Task {
+            await loadWeather()
+        }
+    }
+
+    // 🔹 Remove a city
+    private func removeCity(at offsets: IndexSet) {
+        cities.remove(atOffsets: offsets)
+        UserDefaults.standard.set(cities, forKey: "SavedCities") // Save changes
+
+        Task {
+            await loadWeather()
+        }
+    }
 }
+
 
 
 #Preview {
