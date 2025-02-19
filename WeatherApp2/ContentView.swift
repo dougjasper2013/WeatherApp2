@@ -8,29 +8,52 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var cities: [String] = UserDefaults.standard.stringArray(forKey: "SavedCities") ?? ["New York", "London", "Tokyo"]
+    @State private var cities = ["Toronto", "Halifax", "Vancouver", "Edmonton", "St. Catharines", "Niagara Falls"]
     @State private var weatherData: [CityWeather] = []
-    @State private var isLoading = true
-    @State private var newCity: String = ""
+    @State private var isLoading = false
+    @State private var searchText = ""  // 🔍 Holds user input
+    @State private var suggestedCities: [CitySuggestion] = []  // 🔽 Suggested cities
 
     var body: some View {
         NavigationStack {
             VStack {
-                // Add City TextField & Button
+                // 🔍 Search Bar with Integrated Add Button
                 HStack {
-                    TextField("Enter city name", text: $newCity)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.words)
-
-                    Button(action: addCity) {
-                        Image(systemName: "plus.circle.fill")
+                    TextField("Enter a city", text: $searchText)
+                        .onChange(of: searchText) { newValue in
+                            Task {
+                                await updateSuggestions()
+                            }
+                        }
+                    
+                    // ➕ Add City Button Inside Search Bar
+                    Button(action: {
+                        Task {
+                            await addCity()
+                        }
+                    }) {
+                        Image(systemName: "plus.circle.fill") // ➕ Add button
                             .foregroundColor(.blue)
-                            .font(.title)
+                            .font(.system(size: 25))
                     }
+                    .padding(.trailing)
                 }
-                .padding()
+                .padding(.top)
 
-                // Weather List
+                // 🔽 Drop-Down Suggestions from API
+                if !suggestedCities.isEmpty {
+                    List(suggestedCities) { city in
+                        Button(action: {
+                            searchText = city.displayName // Set selected city
+                            suggestedCities = []  // Hide suggestions
+                        }) {
+                            Text(city.displayName)
+                        }
+                    }
+                    .frame(height: 150) // Limit drop-down height
+                }
+
+                // 🌍 Weather List with Swipe-to-Delete
                 if isLoading {
                     ProgressView("Fetching Weather...")
                 } else {
@@ -41,16 +64,19 @@ struct ContentView: View {
                                     Image(systemName: city.weatherIcon)
                                         .foregroundColor(.blue)
                                         .imageScale(.large)
+
                                     Text(city.name)
                                         .font(.headline)
+
                                     Spacer()
+
                                     Text(city.temperatureString)
                                         .foregroundColor(.blue)
                                 }
                                 .padding(5)
                             }
                         }
-                        .onDelete(perform: removeCity) // Swipe to delete
+                        .onDelete(perform: removeCity) // 🔥 Swipe-to-Delete
                     }
                     .navigationTitle("Weather App")
                 }
@@ -61,15 +87,31 @@ struct ContentView: View {
         }
         .onAppear {
             Task {
-                await loadWeather()
+                await loadWeather() // 🔄 Refresh on back navigation
             }
         }
     }
 
-    // 🔹 Fetch weather data
-    private func loadWeather() async {
-        guard !cities.isEmpty else { return } // Avoid unnecessary API calls
+    /// ✅ Fetch city suggestions dynamically
+    private func updateSuggestions() async {
+        guard !searchText.isEmpty else {
+            suggestedCities = []
+            return
+        }
 
+        do {
+            let results = try await WeatherService.shared.searchCities(query: searchText)
+            DispatchQueue.main.async {
+                self.suggestedCities = results
+            }
+        } catch {
+            print("Error fetching city suggestions: \(error)")
+        }
+    }
+
+    /// ✅ Loads default weather for cities
+    private func loadWeather() async {
+        isLoading = true
         do {
             weatherData = try await withThrowingTaskGroup(of: CityWeather?.self) { group in
                 for city in cities {
@@ -89,35 +131,37 @@ struct ContentView: View {
             isLoading = false
         } catch {
             print("Error fetching weather: \(error)")
+            isLoading = false
         }
     }
 
-    // 🔹 Add a city
-    private func addCity() {
-        let city = newCity.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !city.isEmpty, !cities.contains(city) else { return }
+    /// ✅ Adds a new city to the list
+    private func addCity() async {
+        guard !searchText.isEmpty else { return }
 
-        cities.append(city)
-        UserDefaults.standard.set(cities, forKey: "SavedCities") // Save to UserDefaults
-        newCity = ""
+        let cityName = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        searchText = ""
 
-        Task {
-            await loadWeather()
+        do {
+            let newCityWeather = try await WeatherService.shared.fetchWeather(for: cityName)
+            if !cities.contains(cityName) {
+                cities.append(cityName)  // ✅ Add to list only if it’s not a duplicate
+            }
+            weatherData.append(newCityWeather) // ✅ Add new weather entry
+        } catch {
+            print("Error fetching weather for \(cityName): \(error)")
         }
     }
 
-    // 🔹 Remove a city
+    /// ✅ Removes a city from the list
     private func removeCity(at offsets: IndexSet) {
-        cities.remove(atOffsets: offsets)
-        UserDefaults.standard.set(cities, forKey: "SavedCities") // Save changes
-
-        Task {
-            await loadWeather()
+        for index in offsets {
+            let cityToRemove = weatherData[index].name
+            cities.removeAll { $0 == cityToRemove }
         }
+        weatherData.remove(atOffsets: offsets)
     }
 }
-
-
 
 #Preview {
     ContentView()
