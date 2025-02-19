@@ -22,7 +22,7 @@ struct CityWeather: Identifiable, Codable {
         case "clear sky": return "sun.max.fill"
         case "few clouds", "scattered clouds", "broken clouds": return "cloud.sun.fill"
         case "overcast clouds": return "cloud.fill"
-        case "shower rain", "rain": return "cloud.rain.fill"
+        case "shower rain","light rain", "moderate rain", "heavy rain", "rain": return "cloud.rain.fill"
         case "thunderstorm": return "cloud.bolt.rain.fill"
         case "snow": return "snowflake"
         case "mist", "fog", "haze": return "cloud.fog.fill"
@@ -45,3 +45,5 @@ struct WeatherDetail: Codable {
         let description: String
     }
 }
+
+
