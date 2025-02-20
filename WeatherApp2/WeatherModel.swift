@@ -22,7 +22,7 @@ struct CityWeather: Identifiable, Codable {
         case "clear sky": return "sun.max.fill"
         case "few clouds", "scattered clouds", "broken clouds": return "cloud.sun.fill"
         case "overcast clouds": return "cloud.fill"
-        case "moderate rain", "light rain", "heavy rain", "rain", "showers", "light showers", "scattered showers": return "cloud.rain.fill"
+        case "moderate rain", "light rain", "heavy intensity rain", "very heavy rain", "extreme rain", "freezing rain", "rain", "showers", "light showers", "shower rain", "light intensity shower rain", "heavy intensity shower rain", "ragged shower rain", "scattered showers": return "cloud.rain.fill"
         case "thunderstorm": return "cloud.bolt.rain.fill"
         case "snow": return "snowflake"
         case "mist", "fog", "haze": return "cloud.fog.fill"
