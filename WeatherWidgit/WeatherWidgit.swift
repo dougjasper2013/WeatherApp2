@@ -8,48 +8,72 @@
 import WidgetKit
 import SwiftUI
 
-struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+struct WeatherEntry: TimelineEntry {
+    let date: Date
+    let city: String
+    let temperature: String
+    let condition: String
+    let weatherIcon: String
+}
+
+struct WeatherProvider: TimelineProvider {
+    func placeholder(in context: Context) -> WeatherEntry {
+        WeatherEntry(date: Date(), city: "Toronto", temperature: "10°C", condition: "Clear", weatherIcon: "sun.max.fill")
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+    func getSnapshot(in context: Context, completion: @escaping (WeatherEntry) -> Void) {
+        let entry = WeatherEntry(date: Date(), city: "Toronto", temperature: "10°C", condition: "Clear", weatherIcon: "sun.max.fill")
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
+    func getTimeline(in context: Context, completion: @escaping (Timeline<WeatherEntry>) -> Void) {
+        Task {
+            let city = "Toronto" // Default city (you can modify this)
+            
+            do {
+                let weather = try await WeatherService.shared.fetchWeather(for: city)
+                let entry = WeatherEntry(
+                    date: Date(),
+                    city: weather.name,
+                    temperature: weather.temperatureString,
+                    condition: weather.condition,
+                    weatherIcon: weather.weatherIcon
+                )
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
-            entries.append(entry)
+                let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
+                let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+                completion(timeline)
+            } catch {
+                print("Error fetching weather for widget: \(error)")
+                let fallbackEntry = WeatherEntry(date: Date(), city: "Unknown", temperature: "--°C", condition: "Unknown", weatherIcon: "questionmark.circle.fill")
+                let timeline = Timeline(entries: [fallbackEntry], policy: .after(Date().addingTimeInterval(1800))) // Retry in 30 min
+                completion(timeline)
+            }
         }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
     }
 }
 
-struct SimpleEntry: TimelineEntry {
-    let date: Date
-    let emoji: String
-}
-
-struct WeatherWidgitEntryView : View {
-    var entry: Provider.Entry
+struct WeatherWidgitView: View {
+    var entry: WeatherProvider.Entry
 
     var body: some View {
         VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
+            Text(entry.city)
+                .font(.headline)
 
-            Text("Emoji:")
-            Text(entry.emoji)
+            Image(systemName: entry.weatherIcon)
+                .font(.largeTitle)
+                .foregroundColor(.blue)
+
+            Text(entry.temperature)
+                .font(.title)
+                .bold()
+
+            Text(entry.condition)
+                .font(.caption)
+                .foregroundColor(.gray)
         }
+        .padding()
     }
 }
 
@@ -57,24 +81,26 @@ struct WeatherWidgit: Widget {
     let kind: String = "WeatherWidgit"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            if #available(iOS 17.0, *) {
-                WeatherWidgitEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
-            } else {
-                WeatherWidgitEntryView(entry: entry)
-                    .padding()
-                    .background()
-            }
+        StaticConfiguration(kind: kind, provider: WeatherProvider()) { entry in
+            WeatherWidgitView(entry: entry)
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("Weather Widget")
+        .description("Shows the current weather for a city.")
+        .supportedFamilies([.systemSmall, .systemMedium]) // Widget sizes
     }
 }
 
-#Preview(as: .systemSmall) {
-    WeatherWidgit()
-} timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
+//@main
+struct WeatherWidgits: WidgetBundle {
+    @WidgetBundleBuilder
+    var body: some Widget {
+        WeatherWidgit()
+    }
 }
+
+//#Preview(as: .systemSmall) {
+//    WeatherWidgit()
+//} timeline: {
+//    SimpleEntry(date: .now, emoji: "😀")
+//    SimpleEntry(date: .now, emoji: "🤩")
+//}
