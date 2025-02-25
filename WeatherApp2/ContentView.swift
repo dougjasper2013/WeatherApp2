@@ -13,7 +13,8 @@ struct ContentView: View {
     @State private var isLoading = false
     @State private var searchText = ""  // 🔍 Holds user input
     @State private var suggestedCities: [CitySuggestion] = []  // 🔽 Suggested cities
-
+    @StateObject private var locationManager = LocationManager()
+    
     var body: some View {
         NavigationStack {
             VStack {

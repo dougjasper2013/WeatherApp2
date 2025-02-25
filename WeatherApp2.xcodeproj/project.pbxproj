@@ -22,6 +22,8 @@
 		80846EA52D65FA340099FBA4 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80846EA42D65FA340099FBA4 /* DetailView.swift */; };
 		80846EA72D65FA550099FBA4 /* WeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80846EA62D65FA550099FBA4 /* WeatherModel.swift */; };
 		80846EA92D65FA720099FBA4 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80846EA82D65FA720099FBA4 /* WeatherService.swift */; };
+		80C8F8502D6CAD3B00A47B08 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C8F84F2D6CAD3B00A47B08 /* LocationManager.swift */; };
+		80C8F8512D6CAEE100A47B08 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C8F84F2D6CAD3B00A47B08 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +66,10 @@
 		80846EA42D65FA340099FBA4 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		80846EA62D65FA550099FBA4 /* WeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModel.swift; sourceTree = "<group>"; };
 		80846EA82D65FA720099FBA4 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		80C8F84F2D6CAD3B00A47B08 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		80C8F8522D6CB41000A47B08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		80C8F8532D6CCE1900A47B08 /* WeatherApp2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WeatherApp2.entitlements; sourceTree = "<group>"; };
+		80C8F8542D6CCEC500A47B08 /* WeatherWidgitExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WeatherWidgitExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +115,7 @@
 		80846E8A2D65F9F80099FBA4 = {
 			isa = PBXGroup;
 			children = (
+				80C8F8542D6CCEC500A47B08 /* WeatherWidgitExtension.entitlements */,
 				80846E952D65F9F80099FBA4 /* WeatherApp2 */,
 				802A47C02D676E5300E72954 /* WeatherWidgit */,
 				802A47BB2D676E5300E72954 /* Frameworks */,
@@ -128,6 +135,8 @@
 		80846E952D65F9F80099FBA4 /* WeatherApp2 */ = {
 			isa = PBXGroup;
 			children = (
+				80C8F8532D6CCE1900A47B08 /* WeatherApp2.entitlements */,
+				80C8F8522D6CB41000A47B08 /* Info.plist */,
 				80846E962D65F9F80099FBA4 /* WeatherApp2App.swift */,
 				80846E982D65F9F80099FBA4 /* ContentView.swift */,
 				80846E9A2D65F9F90099FBA4 /* Assets.xcassets */,
@@ -135,6 +144,7 @@
 				80846EA42D65FA340099FBA4 /* DetailView.swift */,
 				80846EA62D65FA550099FBA4 /* WeatherModel.swift */,
 				80846EA82D65FA720099FBA4 /* WeatherService.swift */,
+				80C8F84F2D6CAD3B00A47B08 /* LocationManager.swift */,
 			);
 			path = WeatherApp2;
 			sourceTree = "<group>";
@@ -250,6 +260,7 @@
 			files = (
 				802A47C42D676E5300E72954 /* WeatherWidgit.swift in Sources */,
 				802A47CF2D67776700E72954 /* WeatherService.swift in Sources */,
+				80C8F8512D6CAEE100A47B08 /* LocationManager.swift in Sources */,
 				802A47D02D67785700E72954 /* WeatherModel.swift in Sources */,
 				802A47C22D676E5300E72954 /* WeatherWidgitBundle.swift in Sources */,
 			);
@@ -261,6 +272,7 @@
 			files = (
 				80846EA92D65FA720099FBA4 /* WeatherService.swift in Sources */,
 				80846E992D65F9F80099FBA4 /* ContentView.swift in Sources */,
+				80C8F8502D6CAD3B00A47B08 /* LocationManager.swift in Sources */,
 				80846EA52D65FA340099FBA4 /* DetailView.swift in Sources */,
 				80846EA72D65FA550099FBA4 /* WeatherModel.swift in Sources */,
 				80846E972D65F9F80099FBA4 /* WeatherApp2App.swift in Sources */,
@@ -283,8 +295,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WeatherWidgitExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QUH29RTG32;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WeatherWidgit/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WeatherWidgit;
@@ -309,8 +323,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WeatherWidgitExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QUH29RTG32;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WeatherWidgit/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WeatherWidgit;
@@ -455,11 +471,17 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WeatherApp2/WeatherApp2.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WeatherApp2/Preview Content\"";
+				DEVELOPMENT_TEAM = QUH29RTG32;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WeatherApp2/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "This app needs continuous location access to update weather data in the background.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "This app needs continuous location access to update weather data in the background.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to fetch local weather.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -484,11 +506,17 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WeatherApp2/WeatherApp2.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WeatherApp2/Preview Content\"";
+				DEVELOPMENT_TEAM = QUH29RTG32;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WeatherApp2/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "This app needs continuous location access to update weather data in the background.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "This app needs continuous location access to update weather data in the background.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to fetch local weather.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
